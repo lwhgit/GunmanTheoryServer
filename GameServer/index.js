@@ -4,43 +4,52 @@ var net = require("net");
 var user = require("./users/user");
 
 var UserManager = user.UserManager;
+var AuthenticatorManager = user.AuthenticatorManager;
 
-var port = 8762;
+var loginServerPort = 8762;
+var gameServerPort = 8763;
 
-var server = net.createServer(function(socket) {
-    onSocketConnected(socket);
-    
-    socket.on("error", function(error) {
-        onSocketError(socket, error);
-    }).on("close", function(hasError) {
-        onSocketClosed(socket, hasError);
-    }).on("data", function(data) {
-        onSocketData(socket, data);
-    });
-});
-
-server.listen(port, function() {
-    console.log("Game Server is running on *:%s", port);
-});
+var lgtSocket = null;
+var server = null;
 
 var userManager = new UserManager();
+var authManager = new AuthenticatorManager();
+
+function createServer() {
+    server = net.createServer(function(socket) {
+        onSocketConnected(socket);
+        
+        socket.on("error", function(error) {
+            onSocketError(socket, error);
+        }).on("close", function(hasError) {
+            onSocketClosed(socket, hasError);
+        }).on("data", function(data) {
+            onSocketData(socket, data);
+        });
+    });
+    
+    server.listen(gameServerPort, function() {
+        logi("Game Server is running on *:%s", gameServerPort);
+    });
+}
 
 function onSocketConnected(socket) {
-    console.log("A socket connected.");
+    var reg = new RegExp(".*:.*:.*:([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3})");
+    var ipv4 = reg.exec(socket.remoteAddress)[1];
+    logi("A socket connected.\n  Local address: %s\n  Local port: %s\n  Remote address: %s\n  Remote port: %s", socket.localAddress, socket.localPort, socket.remoteAddress, socket.remotePort);
+    if (ipv4 == "127.0.0.1") {
+        logv("Refresh ltgSocket");
+        lgtSocket = socket;
+    }
 }
 
 function onSocketError(socket, error) {
-    console.log("A socket error. error: %s", error);
+    logi("A socket error. error: %s", error);
 }
 
 function onSocketClosed(socket, hasError) {
     if (socket) {
-        console.log("A socket closed. hasError: %s", hasError);
-        var user = userManager.getUserBySocket(socket);
-        if (user) {
-            userManager.removeUser(user);
-            console.log("A user [%s] was removed.", user.id);
-        }
+        logi("A socket closed. hasError: %s", hasError);
     }
 }
 
@@ -48,36 +57,26 @@ function onSocketData(socket, data) {
     if (socket) {
         var msg = data.toString();
         var cmd = JSON.parse(msg);
-        var user = userManager.getUserBySocket(socket);
-        console.log("Data Received: %s", msg);
+        logi("Data Received: %s", msg);
         
-        if (cmd.request == "join") {
-            if (userManager.isNicknameExists(cmd.nickname)) {
-                socket.write(JSON.stringify({
-                    request: "join",
-                    success: false,
-                    message: "This nickname is already used."
-                }));
-            } else {
-                user = userManager.addUser(socket, cmd.nickname);
-                console.log("A user [%s] was added.", user.id);
-                socket.write(JSON.stringify({
-                    request: "join",
-                    success: false,
-                    message: "Successfully joinned.",
-                    id: user.id
-                }));
-            }
-        } else if (cmd.request == "create_room") {
-            if (user) {
-                // TO DO
-            } else {
-                socket.write(JSON.stringify({
-                    request: "create_room",
-                    success: false,
-                    message: "You are not joinned.",
-                }));
-            }
-        }
+        
     }
 }
+
+function logi(text) {
+    console.log("\u001b[36m", text);
+}
+
+function logv(text) {
+    console.log("\u001b[35m", text);
+}
+
+function logw(text) {
+    console.log("\u001b[33m", text);
+}
+
+function loge(text) {
+    console.log("\u001b[31m", text);
+}
+
+createServer();
