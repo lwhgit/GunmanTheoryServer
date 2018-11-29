@@ -35,7 +35,7 @@ function connectToGameServer() {
         });
         
         ltgSocket.on("error", function(error) {
-            loge("LTG Socket error: %s", error.error);
+            loge("Cannot connect to Game Server.");
             if (error.code == "ECONNREFUSED" || error.code == "ECONNRESET") {
                 logw("Game Server is closed. Reconnect after 5sec.");
                 setTimeout(connectToGameServer, 5000);
@@ -47,12 +47,13 @@ function connectToGameServer() {
             }
         });
     } catch(e) {
-        loge(e);
+        loge("Exception [connectToGameServer]: %s", e);
     }
 }
 
 function onSocketConnected(socket) {
     console.log("A socket connected.");
+    socket.write("{request: 'test', requestCode: 0}");
 }
 
 function onSocketError(socket, error) {
@@ -72,16 +73,10 @@ function onSocketData(socket, data) {
             var cmd = JSON.parse(msg);
             logi("Data Received: %s", msg);
             
-            if (ltgSocket.disconnected) {
-                if (socket == ltgSocket) {
-                    if (cmd.request == "login") {
-                        
-                    }
-                } else {
-                    
-                }
-            } else {
+            if (ltgSocket == null || ltgSocket.destroyed) {
                 logw("Game Server was closed.")
+            } else {
+                
             }
         }
     } catch(e) {

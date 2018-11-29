@@ -67,7 +67,11 @@ function onSocketData(socket, data) {
             var cmd = JSON.parse(msg);
             logi("Data Received: %s", msg);
             
-            if (cmd.request = "register") {
+            if (socket == ltgSocket) {
+                if (cmd.request == "register") {
+                    
+                }
+            } else {
                 
             }
         }
