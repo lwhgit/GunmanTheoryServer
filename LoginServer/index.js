@@ -66,28 +66,67 @@ function onSocketClosed(socket, hasError) {
 }
 
 function onSocketData(socket, data) {
-    if (socket) {
-        var msg = data.toString();
-        var cmd = JSON.parse(msg);
-        logi("Data Received: %s", msg);
-        
+    try {
+        if (socket) {
+            var msg = data.toString();
+            var cmd = JSON.parse(msg);
+            logi("Data Received: %s", msg);
+            
+            if (ltgSocket.disconnected) {
+                if (socket == ltgSocket) {
+                    if (cmd.request == "login") {
+                        
+                    }
+                } else {
+                    
+                }
+            } else {
+                logw("Game Server was closed.")
+            }
+        }
+    } catch(e) {
+        loge("Exception [onSocketData]: " + e);
     }
 }
 
 function logi(text) {
-    console.log("\u001b[36m" + text);
+    var str = "console.log('\\u001b[36m" + text + "'";
+    
+    for (var i = 1;i < arguments.length;i ++) {
+        str += ", '" + arguments[i] + "'";
+    }
+    str += ");"
+    eval(str);
 }
 
 function logv(text) {
-    console.log("\u001b[35m" + text);
+    var str = "console.log('\\u001b[35m" + text + "'";
+    
+    for (var i = 1;i < arguments.length;i ++) {
+        str += ", '" + arguments[i] + "'";
+    }
+    str += ");"
+    eval(str);
 }
 
 function logw(text) {
-    console.log("\u001b[33m" + text);
+    var str = "console.log('\\u001b[33m" + text + "'";
+    
+    for (var i = 1;i < arguments.length;i ++) {
+        str += ", '" + arguments[i] + "'";
+    }
+    str += ");"
+    eval(str);
 }
 
 function loge(text) {
-    console.log("\u001b[31m" + text);
+    var str = "console.log('\\u001b[31m" + text + "'";
+    
+    for (var i = 1;i < arguments.length;i ++) {
+        str += ", '" + arguments[i] + "'";
+    }
+    str += ");"
+    eval(str);
 }
 
 createServer();

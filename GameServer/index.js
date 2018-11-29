@@ -9,7 +9,7 @@ var AuthenticatorManager = user.AuthenticatorManager;
 var loginServerPort = 8762;
 var gameServerPort = 8763;
 
-var lgtSocket = null;
+var ltgSocket = null;
 var server = null;
 
 var userManager = new UserManager();
@@ -36,10 +36,15 @@ function createServer() {
 function onSocketConnected(socket) {
     var reg = new RegExp(".*:.*:.*:([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3})");
     var ipv4 = reg.exec(socket.remoteAddress)[1];
-    logi("A socket connected.\n  Local address: %s\n  Local port: %s\n  Remote address: %s\n  Remote port: %s", socket.localAddress, socket.localPort, socket.remoteAddress, socket.remotePort);
+    logi("A socket connected.");
+    logi("    Local address: %s", socket.localAddress);
+    logi("    Local port: %s", socket.localPort);
+    logi("    Remote address: %s", socket.remoteAddress);
+    logi("    Remote port: %s", socket.remotePort);
+    
     if (ipv4 == "127.0.0.1") {
         logv("Refresh ltgSocket");
-        lgtSocket = socket;
+        ltgSocket = socket;
     }
 }
 
@@ -54,29 +59,61 @@ function onSocketClosed(socket, hasError) {
 }
 
 function onSocketData(socket, data) {
-    if (socket) {
-        var msg = data.toString();
-        var cmd = JSON.parse(msg);
-        logi("Data Received: %s", msg);
+    try {
+        if (ltgSocket)
         
-        
+        if (socket) {
+            var msg = data.toString();
+            var cmd = JSON.parse(msg);
+            logi("Data Received: %s", msg);
+            
+            if (cmd.request = "register") {
+                
+            }
+        }
+    } catch(e) {
+        loge("Exception [onSocketData]: " + e);
     }
 }
 
 function logi(text) {
-    console.log("\u001b[36m", text);
+    var str = "console.log('\\u001b[36m" + text + "'";
+    
+    for (var i = 1;i < arguments.length;i ++) {
+        str += ", '" + arguments[i] + "'";
+    }
+    str += ");"
+    eval(str);
 }
 
 function logv(text) {
-    console.log("\u001b[35m", text);
+    var str = "console.log('\\u001b[35m" + text + "'";
+    
+    for (var i = 1;i < arguments.length;i ++) {
+        str += ", '" + arguments[i] + "'";
+    }
+    str += ");"
+    eval(str);
 }
 
 function logw(text) {
-    console.log("\u001b[33m", text);
+    var str = "console.log('\\u001b[33m" + text + "'";
+    
+    for (var i = 1;i < arguments.length;i ++) {
+        str += ", '" + arguments[i] + "'";
+    }
+    str += ");"
+    eval(str);
 }
 
 function loge(text) {
-    console.log("\u001b[31m", text);
+    var str = "console.log('\\u001b[31m" + text + "'";
+    
+    for (var i = 1;i < arguments.length;i ++) {
+        str += ", '" + arguments[i] + "'";
+    }
+    str += ");"
+    eval(str);
 }
 
 createServer();
