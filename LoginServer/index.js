@@ -70,13 +70,17 @@ function onSocketData(socket, data) {
     try {
         if (socket) {
             var msg = data.toString();
-            var cmd = JSON.parse(msg);
-            logi("Data Received: %s", msg);
+            var json = JSON.parse(msg);
+            console.log("Data Received:\n%s", msg);
             
             if (ltgSocket == null || ltgSocket.destroyed) {
-                logw("Game Server was closed.")
+                logw("Game Server was closed.");
             } else {
                 
+            }
+            
+            if (json.request == "resend") {
+                socket.write(json.content);
             }
         }
     } catch(e) {
