@@ -45,6 +45,8 @@ function connectToGameServer() {
                 logw("Game Server is closed. Reconnect after 5sec.");
                 setTimeout(connectToGameServer, 5000);
             }
+        }).on("data", function(data) {
+            
         });
     } catch(e) {
         loge("Exception [connectToGameServer]: %s", e);
@@ -76,7 +78,9 @@ function onSocketData(socket, data) {
             if (ltgSocket == null || ltgSocket.destroyed) {
                 logw("Game Server was closed.");
             } else {
-                
+                if (cmd.request == "register") {
+                    ltgSocket.write(msg);
+                }
             }
             
             if (json.request == "resend") {

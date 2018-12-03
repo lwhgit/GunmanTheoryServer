@@ -60,19 +60,36 @@ function onSocketClosed(socket, hasError) {
 
 function onSocketData(socket, data) {
     try {
-        if (ltgSocket)
+        if (ltgSocket) {
         
-        if (socket) {
-            var msg = data.toString();
-            var cmd = JSON.parse(msg);
-            logi("Data Received: %s", msg);
-            
-            if (socket == ltgSocket) {
-                if (cmd.request == "register") {
+            if (socket) {
+                var msg = data.toString();
+                var json = JSON.parse(msg);
+                logi("Data Received: %s", msg);
+                
+                if (socket == ltgSocket) {
+                    if (json.request == "register") {
+                        var nickname = json.nickname;
+                        if (authManager.isNicknameExists(nickname)) {
+                            socket.write(obj2json({
+                                request: "register",
+                                result: "failed",
+                                nickname: nickname,
+                                message: "This nickname already exists."
+                            }));
+                        } else {
+                            var auth = authManager.registerAuth(nickname);
+                            socket.write(obj2json({
+                                request: "register",
+                                result: "successed",
+                                nickname: auth.nickname,
+                                id: auth.id
+                            }));
+                        }
+                    }
+                } else {
                     
                 }
-            } else {
-                
             }
         }
     } catch(e) {
@@ -118,6 +135,10 @@ function loge(text) {
     }
     str += ");"
     eval(str);
+}
+
+function obj2json(obj) {
+    return JSON.stringify(obj);
 }
 
 createServer();

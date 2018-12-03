@@ -10,9 +10,9 @@ function User(auth, socket) {
 function AuthenticatorManager() {
     this.authList = new Array();
     
-    this.registerAuth = function(id, nickname) {
-        var auth = new Authenticator(id, nickname);
+    this.registerAuth = function(nickname) {
         var id = this.getEmptyId();
+        var auth = new Authenticator(id, nickname);
         this.authList[id] = auth;
         return auth;
     };
