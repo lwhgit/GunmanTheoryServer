@@ -23,6 +23,7 @@ function AuthenticatorManager() {
             return false;
         } else {
             this.authList.splice(index, 1);
+            return true;
         }
     };
     

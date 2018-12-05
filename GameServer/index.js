@@ -45,6 +45,7 @@ function onSocketConnected(socket) {
     if (ipv4 == "127.0.0.1") {
         logv("Refresh ltgSocket");
         ltgSocket = socket;
+        ltgSocket.write("{}");
     }
 }
 
@@ -68,20 +69,26 @@ function onSocketData(socket, data) {
                 logi("Data Received: %s", msg);
                 
                 if (socket == ltgSocket) {
+                    logi("flag0");
                     if (json.request == "register") {
+                        logi("flag1");
                         var nickname = json.nickname;
                         if (authManager.isNicknameExists(nickname)) {
+                            logi("flag2");
                             socket.write(obj2json({
                                 request: "register",
                                 result: "failed",
+                                socketId: json.socketId,
                                 nickname: nickname,
                                 message: "This nickname already exists."
                             }));
                         } else {
+                            logi("flag3");
                             var auth = authManager.registerAuth(nickname);
                             socket.write(obj2json({
                                 request: "register",
                                 result: "successed",
+                                socketId: json.socketId,
                                 nickname: auth.nickname,
                                 id: auth.id
                             }));

@@ -7,6 +7,8 @@ var server = null;
 
 var ltgSocket = null;
 
+var socketManager = new SocketManager();
+
 function createServer() {
     server = net.createServer(function(socket) {
         onSocketConnected(socket);
@@ -46,7 +48,21 @@ function connectToGameServer() {
                 setTimeout(connectToGameServer, 5000);
             }
         }).on("data", function(data) {
+            var msg = data.toString();
+            var json = JSON.parse(msg);
+            logi("LTG Received: %s", msg);
             
+            if (json.request == "register") {
+                var obj = {
+                    request: json.request,
+                    result: json.result,
+                    nickname: json.nickname,
+                    socketId: json.socketId,
+                    id: json.id
+                };
+                var socket = socketManager.getSocketById(json.socketId);
+                socket.write(JSON.stringify(obj));
+            }
         });
     } catch(e) {
         loge("Exception [connectToGameServer]: %s", e);
@@ -55,7 +71,7 @@ function connectToGameServer() {
 
 function onSocketConnected(socket) {
     console.log("A socket connected.");
-    socket.write("{request: 'test', requestCode: 0}");
+    socketManager.addSocket(socket);
 }
 
 function onSocketError(socket, error) {
@@ -65,6 +81,7 @@ function onSocketError(socket, error) {
 function onSocketClosed(socket, hasError) {
     if (socket) {
         logi("A socket closed. hasError: %s", hasError);
+        socketManager.removeSocket(socket);
     }
 }
 
@@ -78,8 +95,13 @@ function onSocketData(socket, data) {
             if (ltgSocket == null || ltgSocket.destroyed) {
                 logw("Game Server was closed.");
             } else {
-                if (cmd.request == "register") {
-                    ltgSocket.write(msg);
+                if (json.request == "register") {
+                    var obj = {
+                        request: json.request,
+                        nickname: json.nickname,
+                        socketId: socketManager.getSocketId(socket)
+                    };
+                    ltgSocket.write(JSON.stringify(obj));
                 }
             }
             
@@ -130,6 +152,42 @@ function loge(text) {
     }
     str += ");"
     eval(str);
+}
+
+function SocketManager() {
+    this.socketList = new Array();
+    
+    this.addSocket = function(socket) {
+        var id = this.getEmptyId();
+        this.socketList[id] = socket;
+    };
+    
+    this.removeSocket = function(socket) {
+        var index = this.getSocketId(socket);
+        if (index == -1) {
+            return false;
+        } else {
+            this.socketList.splice(index, 1);
+            return true;
+        }
+    };
+    
+    this.getSocketId = function(socket) {
+        return this.socketList.indexOf(socket);
+    };
+    
+    this.getSocketById = function(id) {
+        return this.socketList[id];
+    };
+    
+    this.getEmptyId = function() {
+        for (var id = 0;id < this.socketList.length;id ++) {
+            if (this.socketList[id] == null) {
+                return id;
+            }
+        }
+        return this.socketList.length;
+    };
 }
 
 createServer();
