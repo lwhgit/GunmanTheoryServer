@@ -53,15 +53,15 @@ function connectToGameServer() {
             logi("LTG Received: %s", msg);
             
             if (json.request == "register") {
-                var obj = {
+                
+                var socket = socketManager.getSocketById(json.socketId);
+                socket.write(JSON.stringify({
                     request: json.request,
                     result: json.result,
                     nickname: json.nickname,
                     socketId: json.socketId,
                     id: json.id
-                };
-                var socket = socketManager.getSocketById(json.socketId);
-                socket.write(JSON.stringify(obj));
+                }));
             }
         });
     } catch(e) {

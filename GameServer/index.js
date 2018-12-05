@@ -69,13 +69,10 @@ function onSocketData(socket, data) {
                 logi("Data Received: %s", msg);
                 
                 if (socket == ltgSocket) {
-                    logi("flag0");
                     if (json.request == "register") {
-                        logi("flag1");
                         var nickname = json.nickname;
                         if (authManager.isNicknameExists(nickname)) {
-                            logi("flag2");
-                            socket.write(obj2json({
+                            socket.write(JSON.stringify({
                                 request: "register",
                                 result: "failed",
                                 socketId: json.socketId,
@@ -83,9 +80,8 @@ function onSocketData(socket, data) {
                                 message: "This nickname already exists."
                             }));
                         } else {
-                            logi("flag3");
                             var auth = authManager.registerAuth(nickname);
-                            socket.write(obj2json({
+                            socket.write(JSON.stringify({
                                 request: "register",
                                 result: "successed",
                                 socketId: json.socketId,
@@ -94,8 +90,31 @@ function onSocketData(socket, data) {
                             }));
                         }
                     }
-                } else {
-                    
+                } else if (socket != ltgSocket) {
+                    if (json.register == "login") {
+                        var auth = authManager.getAuth(json.id, json.nickname);
+                        
+                        if (auth) {
+                            if (userManager.registerUser(auth, socket)) {
+                                socket.write(JSON.stringify({
+                                    request: "login",
+                                    result: "successed"
+                                }));
+                            } else {
+                                socket.write(JSON.stringify({
+                                    request: "login",
+                                    result: "failed",
+                                    message: "Cannot use this auth."
+                                }));
+                            }
+                        } else {
+                            socket.write(JSON.stringify({
+                                request: "login",
+                                result: "failed",
+                                message: "This auth not exists."
+                            }));
+                        }
+                    }
                 }
             }
         }
@@ -142,10 +161,6 @@ function loge(text) {
     }
     str += ");"
     eval(str);
-}
-
-function obj2json(obj) {
-    return JSON.stringify(obj);
 }
 
 createServer();

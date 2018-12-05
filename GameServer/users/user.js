@@ -1,10 +1,42 @@
 function UserManager() {
     this.userList = new Array();
+    
+    this.registerUser = function(auth, socket) {
+        if (!this.canUseAuth(auth)) {
+            return null;
+        }
+        
+        var user = new User(auth, socket);
+        this.userList.push(user);
+        return user;
+    };
+    
+    this.removeUser = function(user) {
+        var index = this.userList.indexOf(user);
+        
+        if (index >= 0) {
+            this.userList.splice(index, 1);
+        }
+    };
+    
+    this.canUseAuth = function(auth) {
+        for (var i = 0;i < this.userList.length;i ++) {
+            if (this.userList[i].auth == auth) {
+                return false;
+            }
+        }
+        
+        return true;
+    };
 }
 
 function User(auth, socket) {
     this.auth = auth;
     this.socket = socket;
+    
+    this.send = function(data) {
+        this.socket.write(data);
+    };
 }
 
 function AuthenticatorManager() {
