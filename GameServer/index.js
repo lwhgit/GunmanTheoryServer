@@ -2,9 +2,11 @@ var http = require("http");
 var net = require("net");
 
 var user = require("./users/user");
+var room = require("./rooms/room");
 
 var UserManager = user.UserManager;
 var AuthenticatorManager = user.AuthenticatorManager;
+var RoomManager = room.RoomManager;
 
 var loginServerPort = 8762;
 var gameServerPort = 8763;
@@ -14,6 +16,7 @@ var server = null;
 
 var userManager = new UserManager();
 var authManager = new AuthenticatorManager();
+var roomManager = new RoomManager();
 
 function createServer() {
     server = net.createServer(function(socket) {
@@ -34,6 +37,7 @@ function createServer() {
 }
 
 function onSocketConnected(socket) {
+    /*
     var reg = new RegExp(".*:.*:.*:([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3})");
     var ipv4 = reg.exec(socket.remoteAddress)[1];
     logi("A socket connected.");
@@ -46,7 +50,9 @@ function onSocketConnected(socket) {
         logv("Refresh ltgSocket");
         ltgSocket = socket;
         ltgSocket.write("{}");
-    }
+    }*/
+    
+    logi("A socket connected.");
 }
 
 function onSocketError(socket, error) {
@@ -56,18 +62,20 @@ function onSocketError(socket, error) {
 function onSocketClosed(socket, hasError) {
     if (socket) {
         logi("A socket closed. hasError: %s", hasError);
+        if (socket == ltgSocket) {
+            ltgSocket = null;
+        }
     }
 }
 
 function onSocketData(socket, data) {
     try {
-        if (ltgSocket) {
+        var msg = data.toString();
+        console.log("Data Received:\n%s", msg);
+        var json = JSON.parse(msg);
         
+        if (ltgSocket) {
             if (socket) {
-                var msg = data.toString();
-                var json = JSON.parse(msg);
-                logi("Data Received: %s", msg);
-                
                 if (socket == ltgSocket) {
                     if (json.request == "register") {
                         var nickname = json.nickname;
@@ -91,35 +99,64 @@ function onSocketData(socket, data) {
                         }
                     }
                 } else if (socket != ltgSocket) {
-                    if (json.register == "login") {
-                        var auth = authManager.getAuth(json.id, json.nickname);
-                        
-                        if (auth) {
-                            if (userManager.registerUser(auth, socket)) {
-                                socket.write(JSON.stringify({
-                                    request: "login",
-                                    result: "successed"
+                    var user = userManager.getUserBySocket(socket);
+                    
+                    if (user) {
+                        if (json.request == "create room") {
+                            if (!user.room) {
+                                var room = roomManager.createRoom(user, {
+                                    name: "New Room",
+                                    maxPersonnel: 8
+                                });
+                                user.send(JSON.stringify({
+                                    request: "create rooms",
+                                    result: "successed",
+                                    roomId: room.id
                                 }));
+                            } else {
+                                user.send(JSON.stringify({
+                                    request: "create rooms",
+                                    result: "failed"
+                                }));
+                            }
+                        }
+                    } else {
+                        if (json.request == "login") {
+                            var auth = authManager.getAuth(json.id, json.nickname);
+                            
+                            if (auth) {
+                                if (userManager.canUseAuth(auth)) {
+                                    userManager.registerUser(auth, socket)
+                                    socket.write(JSON.stringify({
+                                        request: "login",
+                                        result: "successed"
+                                    }));
+                                } else {
+                                    socket.write(JSON.stringify({
+                                        request: "login",
+                                        result: "failed",
+                                        message: "Cannot use this auth."
+                                    }));
+                                }
                             } else {
                                 socket.write(JSON.stringify({
                                     request: "login",
                                     result: "failed",
-                                    message: "Cannot use this auth."
+                                    message: "This auth not exists."
                                 }));
                             }
-                        } else {
-                            socket.write(JSON.stringify({
-                                request: "login",
-                                result: "failed",
-                                message: "This auth not exists."
-                            }));
                         }
                     }
                 }
             }
+        } else {
+            if (json.request == "refresh ltgSocket") {
+                logv("Refresh ltgSocket");
+                ltgSocket = socket;
+            }
         }
     } catch(e) {
-        loge("Exception [onSocketData]: " + e);
+        console.log("Exception [onSocketData]: " + e + "\ntack: " + e.stack);
     }
 }
 

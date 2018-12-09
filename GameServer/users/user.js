@@ -2,10 +2,6 @@ function UserManager() {
     this.userList = new Array();
     
     this.registerUser = function(auth, socket) {
-        if (!this.canUseAuth(auth)) {
-            return null;
-        }
-        
         var user = new User(auth, socket);
         this.userList.push(user);
         return user;
@@ -17,6 +13,26 @@ function UserManager() {
         if (index >= 0) {
             this.userList.splice(index, 1);
         }
+    };
+    
+    this.getUserBySocket = function(socket) {
+        for (var  i = 0;i < this.userList.length;i ++) {
+            var user = this.userList[i];
+            if (user.socket == socket) {
+                return user;
+            }
+        }
+        return null;
+    };
+    
+    this.getUserByAuth = function(auth) {
+        for (var  i = 0;i < this.userList.length;i ++) {
+            var user = this.userList[i];
+            if (user.auth == auth) {
+                return user;
+            }
+        }
+        return null;
     };
     
     this.canUseAuth = function(auth) {
@@ -33,9 +49,18 @@ function UserManager() {
 function User(auth, socket) {
     this.auth = auth;
     this.socket = socket;
+    this.room = null;
     
     this.send = function(data) {
         this.socket.write(data);
+    };
+    
+    this.bindRoom = function(room) {
+        this.room = room;
+    };
+    
+    this.unbindRoom = function() {
+        this.room = null;
     };
 }
 
@@ -83,10 +108,10 @@ function AuthenticatorManager() {
     
     this.getAuth = function(id, nickname) {
         for (var id = 0;id < this.authList.length;id ++) {
-            var auth = this.authList[i];
+            var auth = this.authList[id];
             
             if (auth.id == id && auth.nickname == nickname) {
-                return authl
+                return auth;
             }
         }
         return null;

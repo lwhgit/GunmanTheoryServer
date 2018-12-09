@@ -34,6 +34,9 @@ function connectToGameServer() {
             host: "127.0.0.1"
         }, function() {
             logi("Connected to Game Server.");
+            ltgSocket.write(JSON.stringify({
+                request: "refresh ltgSocket"
+            }));
         });
         
         ltgSocket.on("error", function(error) {
@@ -87,11 +90,11 @@ function onSocketClosed(socket, hasError) {
 
 function onSocketData(socket, data) {
     try {
+        var msg = data.toString();
+        console.log("Data Received:\n%s", msg);
+        var json = JSON.parse(msg);
+        
         if (socket) {
-            var msg = data.toString();
-            var json = JSON.parse(msg);
-            console.log("Data Received:\n%s", msg);
-            
             if (ltgSocket == null || ltgSocket.destroyed) {
                 logw("Game Server was closed.");
             } else {
@@ -110,7 +113,7 @@ function onSocketData(socket, data) {
             }
         }
     } catch(e) {
-        loge("Exception [onSocketData]: " + e);
+        console.log("Exception [onSocketData]: " + e + "\ntack: " + e.stack);
     }
 }
 
