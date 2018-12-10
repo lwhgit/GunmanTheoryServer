@@ -53,7 +53,10 @@ function Room(id, chief, config) {
     
     this.removeMember = function(member) {
         this.memberList.splice(this.memberList.indexOf(member), 1);
+        member.unbindRoom();
     };
+    
+    
 }
 
 function RoomConfig() {

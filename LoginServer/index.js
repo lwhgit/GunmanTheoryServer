@@ -113,7 +113,7 @@ function onSocketData(socket, data) {
             }
         }
     } catch(e) {
-        console.log("Exception [onSocketData]: " + e + "\ntack: " + e.stack);
+        console.log("[Exception in onSocketData]: " + e + "\n[stack]: " + e.stack);
     }
 }
 

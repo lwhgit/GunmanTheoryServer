@@ -109,14 +109,44 @@ function onSocketData(socket, data) {
                                     maxPersonnel: 8
                                 });
                                 user.send(JSON.stringify({
-                                    request: "create rooms",
+                                    request: "create room",
                                     result: "successed",
                                     roomId: room.id
                                 }));
                             } else {
                                 user.send(JSON.stringify({
-                                    request: "create rooms",
-                                    result: "failed"
+                                    request: "create room",
+                                    result: "failed",
+                                    message: "You are already in room."
+                                }));
+                            }
+                        } else if (json.request == "enter room") {
+                            if (!user.room) {
+                                var room = roomManager.getRoomById(json.roomId);
+                                room.addMember(user);
+                                user.send(JSON.stringify({
+                                    request: "enter room",
+                                    result: "successed"
+                                }));
+                            } else {
+                                user.send(JSON.stringify({
+                                    request: "create room",
+                                    result: "failed",
+                                    message: "You are already in room."
+                                }));
+                            }
+                        } else if (json.request == "leave room") {
+                            if (user.room) {
+                                uesr.room.removeMember(user);
+                                user.send(JSON.stringify({
+                                    request: "leave room",
+                                    result: "successed"
+                                }));
+                            } else {
+                                user.send(JSON.stringify({
+                                    request: "leave room",
+                                    result: "failed",
+                                    message: "You are not in room."
                                 }));
                             }
                         }
@@ -156,7 +186,7 @@ function onSocketData(socket, data) {
             }
         }
     } catch(e) {
-        console.log("Exception [onSocketData]: " + e + "\ntack: " + e.stack);
+        console.log("[Exception in onSocketData]: " + e + "\n[stack]: " + e.stack);
     }
 }
 
