@@ -37,6 +37,19 @@ function RoomManager() {
         }
         return this.roomList.length;
     };
+    
+    this.getSimplizedRoomList = function() {
+        var obj = [];
+        
+        for (var i = 0;i < this.roomList.length;i ++) {
+            var room = this.roomList[i];
+            if (room != null) {
+                obj.push(room.getSimplizedRoom());
+            }
+        }
+        
+        return obj;
+    };
 }
 
 function Room(id, chief, config) {
@@ -56,7 +69,26 @@ function Room(id, chief, config) {
         member.unbindRoom();
     };
     
+    this.getSimplizedRoom = function() {
+        var obj = {
+            id: this.id,
+            chief: {
+                id: this.chief.getId(),
+                nickname: this.chief.getNickname()
+            },
+            config: this.config
+        };
+        
+        return obj;
+    };
     
+    this.getCurrentPersonnel = function() {
+        return this.memberList.length;
+    };
+    
+    this.getMaxPersonnel = function() {
+        return this.config.maxPersonnel;
+    };
 }
 
 function RoomConfig() {

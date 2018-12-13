@@ -1,0 +1,176 @@
+pre {
+    margin: 0px;
+}
+
+#consoleBox {
+    width: calc(40% - 32px);
+    height: calc(100% - 32px);
+    margin: 16px;
+    text-align: left;
+    border-radius: 8px 8px 8px 8px;
+    float: left;
+}
+
+#logBox {
+    width: 100%;
+    height: calc(100% - 48px);
+    margin-top: 4px;
+    padding: 0px 4px 4px 4px;
+    overflow-y: scroll;
+    border-radius: 8px 8px 0px 0px;
+}
+
+.logLine {
+    width: 100%;
+    height: 24px;
+    padding-left: 4px;
+    line-height: 24px;
+    font-size: 16px;
+    font-family: Consolas, monospace;
+    transition: background-color 0.2s;
+}
+
+.logLine:hover {
+    background-color: #dfdfdf;
+}
+
+#consoleInputBox {
+    width: 100%;
+    height: 48px;
+    border-radius: 0px 0px 8px 8px;
+}
+
+#consoleInputArea {
+    width: 100%;
+    height: 48px;
+    resize: none;
+    border: none;
+    outline: none;
+    overflow: hidden;
+    border-radius: 0px 0px 8px 8px;
+    background-color: #dfdfdf;
+}
+
+.boxTitle {
+    width: 100%;
+    height: 24px;
+    line-height: 24px;
+    font-size: 16px;
+    font-family: Consolas, monospace;
+    font-weight: 800;
+}
+
+#authBox {
+    width: calc(20% - 32px);
+    height: calc(100% - 32px);
+    margin: 16px;
+    padding: 4px;
+    text-align: left;
+    border-radius: 8px 8px 8px 8px;
+    float: left;
+}
+
+#authListBox {
+    width: 100%;
+    height: calc(100% - 24px);
+    overflow-y: scroll;
+}
+
+.authItemBox {
+    width: calc(100% - 16px);
+    height: 64px;
+    margin: 8px;
+    padding: 8px;
+    cursor: pointer;
+    line-height: 16px;
+    font-size: 14px;
+    border-radius: 8px 8px 8px 8px;
+    box-shadow: 0px 2px 8px 1px #a0a0a0;
+    transition: box-shadow 0.2s;
+}
+
+.authItemBox:hover {
+    box-shadow: 0px 2px 8px 3px #a0a0a0;
+}
+
+#userBox {
+    width: calc(20% - 32px);
+    height: calc(100% - 32px);
+    margin: 16px;
+    padding: 4px;
+    text-align: left;
+    border-radius: 8px 8px 8px 8px;
+    float: left;
+}
+
+#userListBox {
+    width: 100%;
+    height: calc(100% - 24px);
+    overflow-y: scroll;
+}
+
+.userItemBox {
+    width: calc(100% - 16px);
+    height: 64px;
+    margin: 8px;
+    padding: 8px;
+    cursor: pointer;
+    line-height: 16px;
+    font-size: 14px;
+    border-radius: 8px 8px 8px 8px;
+    box-shadow: 0px 2px 8px 1px #a0a0a0;
+    transition: box-shadow 0.2s;
+}
+
+.userItemBox:hover {
+    box-shadow: 0px 2px 8px 3px #a0a0a0;
+}
+
+#roomBox {
+    width: calc(20% - 32px);
+    height: calc(100% - 32px);
+    margin: 16px;
+    padding: 4px;
+    text-align: left;
+    border-radius: 8px 8px 8px 8px;
+    float: left;
+}
+
+#roomListBox {
+    width: 100%;
+    height: calc(100% - 24px);
+    overflow-y: scroll;
+}
+
+.roomItemBox {
+    width: calc(100% - 16px);
+    height: 64px;
+    margin: 8px;
+    padding: 8px;
+    cursor: pointer;
+    line-height: 16px;
+    font-size: 14px;
+    border-radius: 8px 8px 8px 8px;
+    box-shadow: 0px 2px 8px 1px #a0a0a0;
+    transition: box-shadow 0.2s;
+}
+
+.roomItemBox:hover {
+    box-shadow: 0px 2px 8px 3px #a0a0a0;
+}
+
+#roomConfigBox {
+    width: 512px;
+    height: 512px;
+    left: 0px;
+    top: 68px;
+    line-height: 16px;
+    font-size: 14px;
+    background-color: #fafafa;
+    border-radius: 0px 8px 8px 0px;
+    box-shadow: 0px 2px 8px 6px #a0a0a0;
+    transition: opacity 0.2s;
+    position: fixed;
+    opacity: 0;
+    display: none;
+}

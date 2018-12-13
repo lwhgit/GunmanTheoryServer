@@ -16,7 +16,7 @@ function UserManager() {
     };
     
     this.getUserBySocket = function(socket) {
-        for (var  i = 0;i < this.userList.length;i ++) {
+        for (var i = 0;i < this.userList.length;i ++) {
             var user = this.userList[i];
             if (user.socket == socket) {
                 return user;
@@ -44,12 +44,26 @@ function UserManager() {
         
         return true;
     };
+    
+    this.getSimplizedUserList = function() {
+        var obj = [];
+        for (var i = 0;i < this.userList.length;i ++) {
+            var user = this.userList[i];
+            obj.push(user.getSimplizedUser());
+        }
+        
+        return obj;
+    };
 }
 
 function User(auth, socket) {
     this.auth = auth;
     this.socket = socket;
-    this.room = null;
+    this.roomId = -1;
+    
+    this.getAuth = function() {
+        return this.auth;
+    };
     
     this.send = function(data) {
         this.socket.write(data);
@@ -61,6 +75,31 @@ function User(auth, socket) {
     
     this.unbindRoom = function() {
         this.room = null;
+    };
+    
+    this.getId = function() {
+        return this.auth.id;
+    };
+    
+    this.getNickname = function() {
+        return this.auth.nickname;
+    };
+    
+    this.getSimplizedUser = function() {
+        var obj = {
+            authId: this.getId(),
+            authNickname: this.getNickname(),
+            room: { }
+        };
+        
+        if (this.room) {
+            obj.room.id = this.room.id;
+            obj.room.name = this.room.name;
+        } else {
+            obj.room.id = -1;
+        }
+        
+        return obj;
     };
 }
 
@@ -140,11 +179,32 @@ function AuthenticatorManager() {
         }
         return null;
     };
+    
+    this.getSimplizedAuthList = function() {
+        var obj = [];
+        for (var id = 0;id < this.authList.length;id ++) {
+            var auth = this.authList[id];
+            if (auth != null) {
+                obj.push(auth.getSimplizedAuth());
+            }
+        }
+        
+        return obj;
+    };
 }
 
 function Authenticator(id, nickname) {
     this.id = id;
     this.nickname = nickname;
+    
+    this.getSimplizedAuth = function() {
+        var obj = {
+            id: this.id,
+            nickname: this.nickname
+        };
+        
+        return obj;
+    };
 }
 
 exports.UserManager = UserManager;

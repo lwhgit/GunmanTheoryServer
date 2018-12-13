@@ -56,15 +56,25 @@ function connectToGameServer() {
             logi("LTG Received: %s", msg);
             
             if (json.request == "register") {
-                
                 var socket = socketManager.getSocketById(json.socketId);
-                socket.write(JSON.stringify({
-                    request: json.request,
-                    result: json.result,
-                    nickname: json.nickname,
-                    socketId: json.socketId,
-                    id: json.id
-                }));
+                
+                if (json.result == "successed") {
+                    socket.write(JSON.stringify({
+                        request: json.request,
+                        result: json.result,
+                        nickname: json.nickname,
+                        socketId: json.socketId,
+                        id: json.id
+                    }));
+                } else if (json.result == "failed") {
+                    socket.write(JSON.stringify({
+                        request: json.request,
+                        result: json.result,
+                        nickname: json.nickname,
+                        socketId: json.socketId,
+                        message: json.message
+                    }));
+                }
             }
         });
     } catch(e) {
