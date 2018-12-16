@@ -55,17 +55,18 @@ function RoomManager() {
 function Room(id, chief, config) {
     this.id = id;
     this.chief = chief;
-    this.chief.bindRoom(this);
-    this.memberList = new Array();
+    this.memberList = new Array(8);
     this.config = config;
     
     this.addMember = function(member) {
-        this.memberList.push(member);
+        var i = this.getEmptyMemberSpace();
+        this.memberList[i] = member;
         member.bindRoom(this);
     };
     
     this.removeMember = function(member) {
-        this.memberList.splice(this.memberList.indexOf(member), 1);
+        var i = this.memberList.indexOf(member);
+        this.memberList[i] = null;
         member.unbindRoom();
     };
     
@@ -76,19 +77,54 @@ function Room(id, chief, config) {
                 id: this.chief.getId(),
                 nickname: this.chief.getNickname()
             },
+            memberList: [],
             config: this.config
         };
+        
+        for (var i = 0;i < this.memberList.length;i ++) {
+            var member = this.memberList[i];
+            if (member == null) {
+                obj.memberList.push({
+                    authId: -1,
+                    authNickname: null,
+                    room: null
+                });
+            } else {
+                obj.memberList.push(member.getSimplizedUser());
+            }
+        }
         
         return obj;
     };
     
+    this.getEmptyMemberSpace = function() {
+        for (var i = 0;i < 8;i ++) {
+            if (this.memberList[i] == null) {
+                return i;
+            }
+        }
+        
+        return -1;
+    };
+    
     this.getCurrentPersonnel = function() {
-        return this.memberList.length;
+        var count = 0;
+        
+        for (var i = 0;i < 8;i ++) {
+            var member = this.memberList[i];
+            if (member != null) {
+                count ++;
+            }
+        }
+        
+        return count;
     };
     
     this.getMaxPersonnel = function() {
         return this.config.maxPersonnel;
     };
+    
+    this.addMember(this.chief);
 }
 
 function RoomConfig() {

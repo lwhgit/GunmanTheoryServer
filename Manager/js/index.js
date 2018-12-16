@@ -47,12 +47,19 @@ function connectToWebSocketServer() {
     };
     
     ws.onerror = function(event) {
+        console.log(event);
         logi("Error. Try to reconnect after 1sec.");
         if (autoReconnect) {
             autoReconnectTimeout = setTimeout(function() {
                 connectToWebSocketServer();
             }, 1000);
         }
+    };
+    
+    ws.onclose = function(event) {
+        console.log(event);
+        logi("WebSocket closed.");
+        connectToWebSocketServer();
     };
 }
 
@@ -216,6 +223,7 @@ function logi(text) {
         var line = $("<div class='logLine'><pre>" + tmp[i] + "</pre></div>");
         logBox.append(line);
     }
+    logBox.scrollTop(logBox.children().length * 24)
 }
 
 connectToWebSocketServer();

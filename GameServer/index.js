@@ -154,10 +154,18 @@ function onSocketData(socket, data) {
                     if (user) {
                         if (json.request == "create room") {
                             if (!user.room) {
-                                var room = roomManager.createRoom(user, {
-                                    name: "New Room",
-                                    maxPersonnel: 8
-                                });
+                                
+                                var config = json.config;
+                                
+                                if (config == null) {
+                                    config = {
+                                        name: "New Room",
+                                        maxPersonnel: 8
+                                    };
+                                }
+                                
+                                var room = roomManager.createRoom(user, config);
+                                
                                 user.send(JSON.stringify({
                                     request: "create room",
                                     result: "successed",
@@ -318,8 +326,10 @@ function onRoomCreated(room) {
 }
 
 function onUserLeftRoom(user, room) {
+    logv("flag1");
     if (room.getCurrentPersonnel() == 0) {
         roomManager.removeRoom(room);
+        logv("flag2");
         if (ws != null) {
             ws.send(JSON.stringify({
                 request: "room removed",
