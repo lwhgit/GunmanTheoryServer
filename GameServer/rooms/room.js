@@ -70,6 +70,15 @@ function Room(id, chief, config) {
         member.unbindRoom();
     };
     
+    this.sendAll = function(data) {
+        for (var i = 0;i < this.memberList.length;i ++) {
+            var member = this.memberList[i];
+            if (member != null) {
+                member.send(data);
+            }
+        }
+    };
+    
     this.getSimplizedRoom = function() {
         var obj = {
             id: this.id,

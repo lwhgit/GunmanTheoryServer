@@ -188,7 +188,7 @@ function onSocketData(socket, data) {
                                         request: "enter room",
                                         result: "successed"
                                     }));
-                                    onRoomCreated(room);
+                                    onUserEnteredRoom(user, room);
                                 } else {
                                     user.send(JSON.stringify({
                                         request: "enter room",
@@ -235,6 +235,23 @@ function onSocketData(socket, data) {
                                 request: "ask room list",
                                 roomList: roomManager.getSimplizedRoomList()
                             }, null, 4));
+                        } else if (json.request == "ask room member list") {
+                            var room = user.room;
+                            
+                            if (room) {
+                                var memberList = room.getSimplizedRoom().memberList;
+                                user.send(JSON.stringify({
+                                    request: "ask room member list",
+                                    result: "successed",
+                                    memberList: memberList
+                                }));
+                            } else {
+                                user.send(JSON.stringify({
+                                    request: "ask room member list",
+                                    result: "failed",
+                                    message: "You are not in room."
+                                }));
+                            }
                         }
                     } else {
                         if (json.request == "login") {
@@ -325,11 +342,15 @@ function onRoomCreated(room) {
     }
 }
 
+function onUserEnteredRoom(user, room) {
+    room.sendAll(JSON.stringify({
+        request: "member entered"
+    }));
+}
+
 function onUserLeftRoom(user, room) {
-    logv("flag1");
     if (room.getCurrentPersonnel() == 0) {
         roomManager.removeRoom(room);
-        logv("flag2");
         if (ws != null) {
             ws.send(JSON.stringify({
                 request: "room removed",

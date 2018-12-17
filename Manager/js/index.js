@@ -55,12 +55,6 @@ function connectToWebSocketServer() {
             }, 1000);
         }
     };
-    
-    ws.onclose = function(event) {
-        console.log(event);
-        logi("WebSocket closed.");
-        connectToWebSocketServer();
-    };
 }
 
 function commandInput(cmd) {
