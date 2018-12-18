@@ -357,6 +357,10 @@ function onUserLeftRoom(user, room) {
                 room: room.getSimplizedRoom()
             }, null, 4));
         }
+    } else {
+        room.sendAll(JSON.stringify({
+            request: "member left"
+        }));
     }
 }
 

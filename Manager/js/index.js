@@ -48,7 +48,12 @@ function connectToWebSocketServer() {
     
     ws.onerror = function(event) {
         console.log(event);
-        logi("Error. Try to reconnect after 1sec.");
+        logi("An error occured.");
+    };
+    
+    ws.onclose = function(event) {
+        logi("WebSocket closed.");
+        logi("Try to reconnect after 1sec.");
         if (autoReconnect) {
             autoReconnectTimeout = setTimeout(function() {
                 connectToWebSocketServer();
@@ -73,7 +78,6 @@ function commandInput(cmd) {
     } else if (s[0] == "stop") {
         if (ws.readyState == WebSocket.OPEN) {
             ws.close();
-            logi("WebSocket closed.");
         }
         autoReconnect = false;
         if (autoReconnectTimeout >= 0) {
