@@ -207,12 +207,11 @@ function onSocketData(socket, data) {
                             if (user.room) {
                                 var room = user.room;
                                 room.removeMember(user);
-                                onUserLeftRoom(user, room);
                                 user.send(JSON.stringify({
                                     request: "leave room",
                                     result: "successed"
                                 }));
-                                onUserLeftRoom(user, user.room);
+                                onUserLeftRoom(user, room);
                             } else {
                                 user.send(JSON.stringify({
                                     request: "leave room",
