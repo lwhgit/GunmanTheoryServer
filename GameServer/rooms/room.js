@@ -64,10 +64,23 @@ function Room(id, chief, config) {
         member.bindRoom(this);
     };
     
-    this.removeMember = function(member) {
+    this.removeMember = function(member) {          //return chief change state
         var i = this.memberList.indexOf(member);
         this.memberList[i] = null;
         member.unbindRoom();
+        
+        if (member == this.chief) {
+            for (var i = 0;i < 8;i ++) {
+                var member = this.memberList[i];
+                
+                if (member != null) {
+                    this.chief = member;
+                }
+            }
+            
+            return true;
+        }
+        return false;
     };
     
     this.sendAll = function(data) {

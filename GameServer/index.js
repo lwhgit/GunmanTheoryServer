@@ -135,6 +135,7 @@ function onSocketData(socket, data) {
                                 nickname: nickname,
                                 message: "This nickname already exists."
                             }));
+                            
                         } else {
                             var auth = authManager.registerAuth(nickname);
                             socket.write(JSON.stringify({
@@ -251,6 +252,22 @@ function onSocketData(socket, data) {
                                     message: "You are not in room."
                                 }));
                             }
+                        } else if (json.request == "ask room chief") {
+                            var room = user.room;
+                            
+                            if (room) {
+                                user.send(JSON.stringify({
+                                    request: "ask room chief",
+                                    result: "successed",
+                                    chief: room.chief.getSimplizedUser()
+                                }));
+                            } else {
+                                user.send(JSON.stringify({
+                                    request: "ask room chief",
+                                    result: "failed",
+                                    message: "You are not in room."
+                                }));
+                            }
                         }
                     } else {
                         if (json.request == "login") {
@@ -349,7 +366,9 @@ function onUserEnteredRoom(user, room) {
 
 function onUserLeftRoom(user, room) {
     if (room.getCurrentPersonnel() == 0) {
-        roomManager.removeRoom(room);
+        if (roomManager.removeRoom(room)) {
+            onRoomChiefChanged(room);
+        }
         if (ws != null) {
             ws.send(JSON.stringify({
                 request: "room removed",
@@ -361,6 +380,13 @@ function onUserLeftRoom(user, room) {
             request: "member left"
         }));
     }
+}
+
+function onRoomChiefChanged(room) {
+    room.sendAll(JSON.stringify({
+        request: "chief changed",
+        chief: room.chief.getSimplizedRoom()
+    }));
 }
 
 function logi(text) {
