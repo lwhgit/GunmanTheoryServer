@@ -120,7 +120,7 @@ function onSocketData(socket, data) {
     try {
         var msg = data.toString();
         console.log("Data Received:\n%s", msg);
-        var json = JSON.parse(msg);
+        var json = JSON.parse(msg.trim());
         
         if (ltgSocket) {
             if (socket) {
@@ -179,6 +179,9 @@ function onSocketData(socket, data) {
                                     result: "failed",
                                     message: "You are already in room."
                                 }));
+                                
+                                logw("Request failed.");
+                                logi("You are already in room.");
                             }
                         } else if (json.request == "enter room") {
                             if (!user.room) {
@@ -196,6 +199,9 @@ function onSocketData(socket, data) {
                                         result: "failed",
                                         message: "The room is full."
                                     }));
+                                    
+                                    logw("Request failed.");
+                                    logi("The room is full.");
                                 }
                             } else {
                                 user.send(JSON.stringify({
@@ -203,11 +209,18 @@ function onSocketData(socket, data) {
                                     result: "failed",
                                     message: "You are already in room."
                                 }));
+                                
+                                logw("Request failed.");
+                                logi("You are already in room.");
                             }
                         } else if (json.request == "leave room") {
                             if (user.room) {
                                 var room = user.room;
-                                room.removeMember(user);
+                                
+                                if (room.removeMember(user)) {
+                                    onRoomChiefChanged(room);
+                                }
+                                
                                 user.send(JSON.stringify({
                                     request: "leave room",
                                     result: "successed"
@@ -219,6 +232,9 @@ function onSocketData(socket, data) {
                                     result: "failed",
                                     message: "You are not in room."
                                 }));
+                                
+                                logw("Request failed.");
+                                logi("You are not in room.");
                             }
                         } else if (json.request == "ask auth list") {
                             user.send(JSON.stringify({
@@ -251,13 +267,16 @@ function onSocketData(socket, data) {
                                     result: "failed",
                                     message: "You are not in room."
                                 }));
+                                
+                                logw("Request failed.");
+                                logi("You are not in room.");
                             }
-                        } else if (json.request == "ask room chief") {
+                        } else if (json.request == "ask room chief data") {
                             var room = user.room;
                             
                             if (room) {
                                 user.send(JSON.stringify({
-                                    request: "ask room chief",
+                                    request: "ask room chief data",
                                     result: "successed",
                                     chief: room.chief.getSimplizedUser()
                                 }));
@@ -267,6 +286,9 @@ function onSocketData(socket, data) {
                                     result: "failed",
                                     message: "You are not in room."
                                 }));
+                                
+                                logw("Request failed.");
+                                logi("You are not in room.");
                             }
                         }
                     } else {
@@ -366,9 +388,8 @@ function onUserEnteredRoom(user, room) {
 
 function onUserLeftRoom(user, room) {
     if (room.getCurrentPersonnel() == 0) {
-        if (roomManager.removeRoom(room)) {
-            onRoomChiefChanged(room);
-        }
+        roomManager.removeRoom(room);
+        
         if (ws != null) {
             ws.send(JSON.stringify({
                 request: "room removed",
@@ -383,9 +404,10 @@ function onUserLeftRoom(user, room) {
 }
 
 function onRoomChiefChanged(room) {
+    logi("Room chief changed.");
     room.sendAll(JSON.stringify({
         request: "chief changed",
-        chief: room.chief.getSimplizedRoom()
+        chief: room.chief.getSimplizedUser()
     }));
 }
 

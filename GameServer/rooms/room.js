@@ -64,7 +64,7 @@ function Room(id, chief, config) {
         member.bindRoom(this);
     };
     
-    this.removeMember = function(member) {          //return chief change state
+    this.removeMember = function(member) {          // return chief change state
         var i = this.memberList.indexOf(member);
         this.memberList[i] = null;
         member.unbindRoom();
@@ -75,6 +75,7 @@ function Room(id, chief, config) {
                 
                 if (member != null) {
                     this.chief = member;
+                    break;
                 }
             }
             
