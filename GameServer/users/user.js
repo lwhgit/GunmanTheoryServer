@@ -209,9 +209,3 @@ function Authenticator(id, nickname) {
 
 exports.UserManager = UserManager;
 exports.AuthenticatorManager = AuthenticatorManager;
-exports.onUserAdded = function(user) {
-    
-};
-exports.onUserRemoved = function(user) {
-    
-};

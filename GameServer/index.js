@@ -2,11 +2,13 @@ var http = require("http");
 var net = require("net");
 var WebSocket = require("ws");
 
+var socket = require("./sockets/socket");
 var user = require("./users/user");
 var room = require("./rooms/room");
 
 var WebSocketServer = WebSocket.Server;
 
+var SocketManager = socket.SocketManager;
 var UserManager = user.UserManager;
 var AuthenticatorManager = user.AuthenticatorManager;
 var RoomManager = room.RoomManager;
@@ -20,6 +22,7 @@ var ws = null;
 var ltgSocket = null;
 var server = null;
 
+var socketManager = new SocketManager();
 var userManager = new UserManager();
 var authManager = new AuthenticatorManager();
 var roomManager = new RoomManager();
@@ -63,6 +66,8 @@ function openWebSocketServer() {
 
 function createServer() {
     server = net.createServer(function(socket) {
+        socket = socketManager.getCSocket(socket);
+        
         onSocketConnected(socket);
         
         socket.on("error", function(error) {
@@ -77,6 +82,8 @@ function createServer() {
     server.listen(gameServerPort, function() {
         logi("Game Server is running on *:%s", gameServerPort);
     });
+    
+    socketManager.runSender();
 }
 
 function onSocketConnected(socket) {
