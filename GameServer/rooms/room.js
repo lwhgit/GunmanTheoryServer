@@ -58,6 +58,14 @@ function Room(id, chief, config) {
     this.memberList = new Array(8);
     this.config = config;
     
+    this.onData = function(user, json) {
+        if (json.request == "game start") {
+            this.sendAll(JSON.stringify({
+                request: "game start"
+            }));
+        }
+    };
+    
     this.addMember = function(member) {
         var i = this.getEmptyMemberSpace();
         this.memberList[i] = member;

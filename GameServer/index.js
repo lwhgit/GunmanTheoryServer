@@ -298,6 +298,10 @@ function onSocketData(socket, data) {
                                 logi("You are not in room.");
                             }
                         }
+                        
+                        if (user.room) {
+                            user.room.onData(user, json);
+                        }
                     } else {
                         if (json.request == "login") {
                             var auth = authManager.getAuth(json.id, json.nickname);
