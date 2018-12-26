@@ -1,4 +1,5 @@
-var util = require("./games/util");
+var util = require("./util");
+var card = require("./card");
 
 var PROBABILITY_STATE_KEEP = 0;
 var PROBABILITY_STATE_INCREASE = 1;
@@ -8,24 +9,32 @@ function GameMember(member) {
     this.member = member;
     this.shootProbability = util.randomRange(10, 30);
     this.probabilityState = PROBABILITY_STATE_KEEP;
-    this.activeCard = Card.getRandomCard();
+    this.activeCard = card.getRandomCard();
     this.state = {
         burglar: false,
         meditation: false,
         armor: false,
         insurance: false,
-        curse: false,
         supporter: false,
         struggle: false
     };
     
     this.getSimplizedGameMember = function() {
-        var obj = {
-            member: this.memebr.getSimplizedUser(),
-            shootProbability: this.shootProbability,
-            probabilityState: this.probabilityState,
-            activeCard: this.activeCard
-        };
+        var obj = null;
+        if (this.member) {
+            obj = {
+                member: this.member.getSimplizedUser(),
+                shootProbability: this.shootProbability,
+                probabilityState: this.probabilityState,
+                activeCard: this.activeCard
+            };
+        } else {
+            obj = {
+                member: null
+            };
+        }
+        
+        return obj;
     };
 }
 

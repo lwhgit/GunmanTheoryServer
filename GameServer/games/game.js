@@ -1,20 +1,24 @@
-var util = require("./games/util");
-var gamemember = require("./games/gamemember");
+var util = require("./util");
+var gamemember = require("./gamemember");
 
 var TURN_DIRECTION_CW = 0;
 var TURN_DIRECTION_CCW = 1;
 
 function Game(room) {
     this.room = room;
-    this.gameMemberList = gamemember.memberList2gameMemberList(room.getSimplizedRoom().memberList);
+    this.gameMemberList = gamemember.memberList2gameMemberList(room.memberList);
     this.round = 0;
     this.turnDirection = TURN_DIRECTION_CW;
     this.currentTurn = 0;
     
-    this.init = function() {
+    this.initRound = function() {
         this.shuffleMember();
         this.setFirstTurn();
-        this.sendAll(this.getSimplizedGame());
+        
+        this.sendAll(JSON.stringify({
+            request: "game info",
+            game: this.getSimplizedGame()
+        }));
     };
     
     this.onData = function(user, json) {
@@ -23,6 +27,10 @@ function Game(room) {
     
     this.onTurnChanged = function() {
         
+    };
+    
+    this.start = function() {
+        this.initRound();
     };
     
     this.shuffleMember = function() {
@@ -37,9 +45,11 @@ function Game(room) {
     this.setFirstTurn = function() {
         for (var i = 0;i < 8;i ++) {
             var gameMember = this.gameMemberList[i];
-            if (gameMember.member.authId != -1) {
-                this.currentTurn = i;
-                break;
+            if (gameMember.member) {
+                if (gameMember.member.auth.id != -1) {
+                    this.currentTurn = i;
+                    break;
+                }
             }
         }
     };
@@ -47,7 +57,9 @@ function Game(room) {
     this.sendAll = function(data) {
         for (var i = 0;i < 8;i ++) {
             var gameMember = this.gameMemberList[i];
-            gameMember.member.send(data);
+            if (gameMember.member) {
+                gameMember.member.send(data);
+            }
         }
     };
     
@@ -66,3 +78,5 @@ function Game(room) {
         return obj;
     };
 }
+
+exports.Game = Game;

@@ -1,3 +1,7 @@
+var game = require("../games/game");
+
+var Game = game.Game;
+
 function RoomManager() {
     this.roomList = new Array();
     
@@ -57,12 +61,16 @@ function Room(id, chief, config) {
     this.chief = chief;
     this.memberList = new Array(8);
     this.config = config;
+    this.game = null;
     
     this.onData = function(user, json) {
         if (json.request == "game start") {
             this.sendAll(JSON.stringify({
                 request: "game start"
             }));
+            
+            this.game = new Game(this);
+            this.game.start();
         }
     };
     
