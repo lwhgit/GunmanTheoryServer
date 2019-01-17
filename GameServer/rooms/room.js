@@ -64,6 +64,10 @@ function Room(id, chief, config) {
     this.game = null;
     
     this.onData = function(user, json) {
+        if (this.game) {
+            this.game.onData(uase, data);
+        }
+        
         if (json.request == "game start") {
             this.sendAll(JSON.stringify({
                 request: "game start"

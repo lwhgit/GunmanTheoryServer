@@ -8,7 +8,7 @@ function Game(room) {
     this.room = room;
     this.gameMemberList = gamemember.memberList2gameMemberList(room.memberList);
     this.round = 0;
-    this.turnDirection = TURN_DIRECTION_CW;
+    this.turnDirection = TURN_DIRECTION_CCW;
     this.currentTurn = 0;
     
     this.initRound = function() {
@@ -22,7 +22,7 @@ function Game(room) {
     };
     
     this.onData = function(user, json) {
-        
+        var gameMember = this.getGameMemberByUser(user);
     };
     
     this.onTurnChanged = function() {
@@ -61,6 +61,17 @@ function Game(room) {
                 gameMember.member.send(data);
             }
         }
+    };
+    
+    this.getGameMemberByUser = function(user) {
+        for (var i = 0;i < gameMemberList.length;i ++) {
+            var gameMember = gameMemberList[i];
+            
+            if (gameMember.user == user) {
+                return gameMember;
+            }
+        }
+        return null;
     };
     
     this.getSimplizedGame = function() {

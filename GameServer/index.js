@@ -87,13 +87,17 @@ function createServer() {
 }
 
 function onSocketConnected(socket) {
-    var reg = new RegExp(".*:.*:.*:([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3})");
-    var ipv4 = reg.exec(socket.remoteAddress)[1];
-    logi("A socket connected.");
-    logi("    Local address: %s", socket.localAddress);
-    logi("    Local port: %s", socket.localPort);
-    logi("    Remote address: %s", socket.remoteAddress);
-    logi("    Remote port: %s", socket.remotePort);
+    try {
+        var reg = new RegExp(".*:.*:.*:([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3})");
+        var ipv4 = reg.exec(socket.remoteAddress)[1];
+        logi("A socket connected.");
+        logi("    Local address: %s", socket.localAddress);
+        logi("    Local port: %s", socket.localPort);
+        logi("    Remote address: %s", socket.remoteAddress);
+        logi("    Remote port: %s", socket.remotePort);
+    } catch (e) {
+        console.log("[Exception in onSocketConnected]: " + e + "\n[stack]: " + e.stack);
+    }
 }
 
 function onSocketError(socket, error) {

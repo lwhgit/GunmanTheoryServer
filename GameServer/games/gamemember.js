@@ -5,8 +5,8 @@ var PROBABILITY_STATE_KEEP = 0;
 var PROBABILITY_STATE_INCREASE = 1;
 var PROBABILITY_STATE_DECREASE = 2;
 
-function GameMember(member) {
-    this.member = member;
+function GameMember(user) {
+    this.user = user;
     this.shootProbability = util.randomRange(10, 30);
     this.probabilityState = PROBABILITY_STATE_KEEP;
     this.activeCard = card.getRandomCard();
@@ -21,16 +21,16 @@ function GameMember(member) {
     
     this.getSimplizedGameMember = function() {
         var obj = null;
-        if (this.member) {
+        if (this.user) {
             obj = {
-                member: this.member.getSimplizedUser(),
+                user: this.user.getSimplizedUser(),
                 shootProbability: this.shootProbability,
                 probabilityState: this.probabilityState,
                 activeCard: this.activeCard
             };
         } else {
             obj = {
-                member: null
+                user: null
             };
         }
         
