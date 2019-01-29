@@ -2,14 +2,14 @@ function SocketManager() {
     this.senderInterval = -1;
     this.queueForSend = new Queue();
     
-    this.addSendQueue = function(netSocket, data) {
+    this.addSendQueue = function(netSocket, data) { // net.Socket, string
         this.queueForSend.enqueue({
             netSocket: netSocket,
             data: data
         });
     };
     
-    this.getCSocket = function(netSocket) {
+    this.getCSocket = function(netSocket) { // net.Socket
         return new Socket(this, netSocket);
     };
     
@@ -29,7 +29,7 @@ function SocketManager() {
     };
 }
 
-function Socket(socketManager, netSocket) {
+function Socket(socketManager, netSocket) { // SocketManager, net.Socket
     this.socketManager = socketManager;
     this.netSocket = netSocket;
     this.localAddress = netSocket.localAddress;
@@ -37,11 +37,11 @@ function Socket(socketManager, netSocket) {
     this.remoteAddress = netSocket.remoteAddress;
     this.remotePort = netSocket.remotePort;
     
-    this.write = function(data) {
+    this.write = function(data) {   // string
         this.socketManager.addSendQueue(this.netSocket, data);
     };
     
-    this.on = function(eventName, func) {
+    this.on = function(eventName, func) {   // string, function
         return this.netSocket.on(eventName, func);
     };
 }
@@ -49,7 +49,7 @@ function Socket(socketManager, netSocket) {
 function Queue() {
     this.array = new Array();
     
-    this.enqueue = function(data) {
+    this.enqueue = function(data) { // string
         this.array.push(data);
     };
     

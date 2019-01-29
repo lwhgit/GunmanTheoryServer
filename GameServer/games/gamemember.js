@@ -5,7 +5,7 @@ var PROBABILITY_STATE_KEEP = 0;
 var PROBABILITY_STATE_INCREASE = 1;
 var PROBABILITY_STATE_DECREASE = 2;
 
-function GameMember(user) {
+function GameMember(user) { // User
     this.user = user;
     this.shootProbability = util.randomRange(10, 30);
     this.probabilityState = PROBABILITY_STATE_KEEP;
@@ -38,7 +38,7 @@ function GameMember(user) {
     };
 }
 
-function memberList2gameMemberList(memberList) {
+function memberList2gameMemberList(memberList) {    // User[]
     var list = [];
     
     for (var i = 0;i < 8;i ++) {

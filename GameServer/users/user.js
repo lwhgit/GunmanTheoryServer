@@ -1,13 +1,13 @@
 function UserManager() {
     this.userList = new Array();
     
-    this.registerUser = function(auth, socket) {
+    this.registerUser = function(auth, socket) {    // Authenticator, Socket
         var user = new User(auth, socket);
         this.userList.push(user);
         return user;
     };
     
-    this.removeUser = function(user) {
+    this.removeUser = function(user) {  // User
         var index = this.userList.indexOf(user);
         
         if (index >= 0) {
@@ -15,7 +15,7 @@ function UserManager() {
         }
     };
     
-    this.getUserBySocket = function(socket) {
+    this.getUserBySocket = function(socket) {   // Socket
         for (var i = 0;i < this.userList.length;i ++) {
             var user = this.userList[i];
             if (user.socket == socket) {
@@ -25,7 +25,7 @@ function UserManager() {
         return null;
     };
     
-    this.getUserByAuth = function(auth) {
+    this.getUserByAuth = function(auth) {   // Authenticator
         for (var  i = 0;i < this.userList.length;i ++) {
             var user = this.userList[i];
             if (user.auth == auth) {
@@ -35,7 +35,7 @@ function UserManager() {
         return null;
     };
     
-    this.canUseAuth = function(auth) {
+    this.canUseAuth = function(auth) { // Authenticator
         for (var i = 0;i < this.userList.length;i ++) {
             if (this.userList[i].auth == auth) {
                 return false;
@@ -56,7 +56,7 @@ function UserManager() {
     };
 }
 
-function User(auth, socket) {
+function User(auth, socket) {   // Authenticator, Socket
     this.auth = auth;
     this.socket = socket;
     this.roomId = -1;
@@ -65,11 +65,11 @@ function User(auth, socket) {
         return this.auth;
     };
     
-    this.send = function(data) {
+    this.send = function(data) {    // string
         this.socket.write(data);
     };
     
-    this.bindRoom = function(room) {
+    this.bindRoom = function(room) {    // Room
         this.room = room;
     };
     
@@ -106,14 +106,14 @@ function User(auth, socket) {
 function AuthenticatorManager() {
     this.authList = new Array();
     
-    this.registerAuth = function(nickname) {
+    this.registerAuth = function(nickname) {    // string
         var id = this.getEmptyId();
         var auth = new Authenticator(id, nickname);
         this.authList[id] = auth;
         return auth;
     };
     
-    this.removeAuth = function(auth) {
+    this.removeAuth = function(auth) {  // Authenticator
         var index = this.authList.indexOf(auth);
         if (index == -1) {
             return false;
@@ -132,7 +132,7 @@ function AuthenticatorManager() {
         return this.authList.length;
     };
     
-    this.isNicknameExists = function(nickname) {
+    this.isNicknameExists = function(nickname) { // string
         for (var i = 0;i < this.authList.length;i ++) {
             var auth = this.authList[i];
             if (auth) {
@@ -145,7 +145,7 @@ function AuthenticatorManager() {
     };
     
     
-    this.getAuth = function(id, nickname) {
+    this.getAuth = function(id, nickname) { // int, string
         for (var id = 0;id < this.authList.length;id ++) {
             var auth = this.authList[id];
             
@@ -156,7 +156,7 @@ function AuthenticatorManager() {
         return null;
     };
     
-    this.getAuthById = function(id) {
+    this.getAuthById = function(id) { // int
         for (var i = 0;i < this.authList.length;i ++) {
             var auth = this.authList[i];
             if (auth) {
@@ -168,7 +168,7 @@ function AuthenticatorManager() {
         return null;
     };
     
-    this.getAuthByNickname = function(nickname) {
+    this.getAuthByNickname = function(nickname) { // string
         for (var i = 0;i < this.authList.length;i ++) {
             var auth = this.authList[i];
             if (auth) {
@@ -193,7 +193,7 @@ function AuthenticatorManager() {
     };
 }
 
-function Authenticator(id, nickname) {
+function Authenticator(id, nickname) { // int, string
     this.id = id;
     this.nickname = nickname;
     

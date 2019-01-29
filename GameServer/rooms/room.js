@@ -5,13 +5,13 @@ var Game = game.Game;
 function RoomManager() {
     this.roomList = new Array();
     
-    this.createRoom = function(user, config) {
+    this.createRoom = function(user, config) { // User, Object
         var id = this.getEmptyId();
         this.roomList[id] = new Room(id, user, config);
         return this.roomList[id];
     };
     
-    this.removeRoom = function(room) {
+    this.removeRoom = function(room) {  // Room
         var index = this.roomList.indexOf(room);
         if (index == -1) {
             return false;
@@ -21,7 +21,7 @@ function RoomManager() {
         }
     };
     
-    this.getRoomById = function(id) {
+    this.getRoomById = function(id) {   // int
         for (var i = 0;i < this.roomList.length;i ++) {
             var room = this.roomList[i];
             if (room) {
@@ -57,17 +57,13 @@ function RoomManager() {
 }
 
 function Room(id, chief, config) {
-    this.id = id;
-    this.chief = chief;
-    this.memberList = new Array(8);
-    this.config = config;
+    this.id = id;                       // int
+    this.chief = chief;                 // User
+    this.memberList = new Array(8);     // User[]
+    this.config = config;               // Object| name, maxPersonnel
     this.game = null;
     
-    this.onData = function(user, json) {
-        if (this.game) {
-            this.game.onData(uase, data);
-        }
-        
+    this.onData = function(user, json) {    // User, string
         if (json.request == "game start") {
             this.sendAll(JSON.stringify({
                 request: "game start"
@@ -76,9 +72,12 @@ function Room(id, chief, config) {
             this.game = new Game(this);
             this.game.start();
         }
+        if (this.game) {
+            this.game.onData(uase, data);
+        }
     };
     
-    this.addMember = function(member) {
+    this.addMember = function(member) { // User
         var i = this.getEmptyMemberSpace();
         this.memberList[i] = member;
         member.bindRoom(this);
@@ -104,7 +103,7 @@ function Room(id, chief, config) {
         return false;
     };
     
-    this.sendAll = function(data) {
+    this.sendAll = function(data) { // string
         for (var i = 0;i < this.memberList.length;i ++) {
             var member = this.memberList[i];
             if (member != null) {

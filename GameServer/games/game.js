@@ -4,7 +4,7 @@ var gamemember = require("./gamemember");
 var TURN_DIRECTION_CW = 0;
 var TURN_DIRECTION_CCW = 1;
 
-function Game(room) {
+function Game(room) {   // Room
     this.room = room;
     this.gameMemberList = gamemember.memberList2gameMemberList(room.memberList);
     this.round = 0;
@@ -21,7 +21,7 @@ function Game(room) {
         }));
     };
     
-    this.onData = function(user, json) {
+    this.onData = function(user, json) {    // User, string
         var gameMember = this.getGameMemberByUser(user);
     };
     
@@ -54,7 +54,7 @@ function Game(room) {
         }
     };
     
-    this.sendAll = function(data) {
+    this.sendAll = function(data) { // string
         for (var i = 0;i < 8;i ++) {
             var gameMember = this.gameMemberList[i];
             if (gameMember.member) {
@@ -63,7 +63,7 @@ function Game(room) {
         }
     };
     
-    this.getGameMemberByUser = function(user) {
+    this.getGameMemberByUser = function(user) { // User
         for (var i = 0;i < gameMemberList.length;i ++) {
             var gameMember = gameMemberList[i];
             

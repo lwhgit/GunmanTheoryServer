@@ -32,7 +32,7 @@ function openWebSocketServer() {
         port: wssServerPort
     });
     
-    wss.on("connection", function(_ws) {
+    wss.on("connection", function(_ws) { // WebSocket
         logi("WS connected.");
         
         ws = _ws;
@@ -65,7 +65,7 @@ function openWebSocketServer() {
 }
 
 function createServer() {
-    server = net.createServer(function(socket) {
+    server = net.createServer(function(socket) {    // Socket
         socket = socketManager.getCSocket(socket);
         
         onSocketConnected(socket);
@@ -86,7 +86,7 @@ function createServer() {
     socketManager.runSender();
 }
 
-function onSocketConnected(socket) {
+function onSocketConnected(socket) {    // Socket
     try {
         var reg = new RegExp(".*:.*:.*:([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3})");
         var ipv4 = reg.exec(socket.remoteAddress)[1];
@@ -100,11 +100,11 @@ function onSocketConnected(socket) {
     }
 }
 
-function onSocketError(socket, error) {
+function onSocketError(socket, error) { // Socket, string
     logi("A socket error. error: %s", error);
 }
 
-function onSocketClosed(socket, hasError) {
+function onSocketClosed(socket, hasError) { // Socket, boolean
     if (socket) {
         logi("A socket closed. hasError: %s", hasError);
         if (socket == ltgSocket) {
@@ -127,7 +127,7 @@ function onSocketClosed(socket, hasError) {
     }
 }
 
-function onSocketData(socket, data) {
+function onSocketData(socket, data) {   // Socket, ???
     try {
         var msg = data.toString();
         console.log("Data Received:\n%s", msg);
@@ -216,7 +216,7 @@ function onSocketData(socket, data) {
                                 }
                             } else {
                                 user.send(JSON.stringify({
-                                    request: "create room",
+                                    request: "enter room",
                                     result: "failed",
                                     message: "You are already in room."
                                 }));
@@ -349,7 +349,7 @@ function onSocketData(socket, data) {
     }
 }
 
-function onAuthRegistered(auth) {
+function onAuthRegistered(auth) {   // Authenticator
     
     if (ws != null) {
         ws.send(JSON.stringify({
@@ -359,7 +359,7 @@ function onAuthRegistered(auth) {
     }
 }
 
-function onAuthUnregistered(auth) {
+function onAuthUnregistered(auth) { // Authenticator
     if (ws != null) {
         ws.send(JSON.stringify({
             request: "auth unregistered",
@@ -368,7 +368,7 @@ function onAuthUnregistered(auth) {
     }
 }
 
-function onUserLoggedIn(user) {
+function onUserLoggedIn(user) { // User
     if (ws != null) {
         ws.send(JSON.stringify({
             request: "user loggedIn",
@@ -377,7 +377,7 @@ function onUserLoggedIn(user) {
     }
 }
 
-function onUserLoggedOut(user) {
+function onUserLoggedOut(user) { // User
     if (ws != null) {
         ws.send(JSON.stringify({
             request: "user loggedOut",
@@ -386,7 +386,7 @@ function onUserLoggedOut(user) {
     }
 }
 
-function onRoomCreated(room) {
+function onRoomCreated(room) {  // Room
     if (ws != null) {
         ws.send(JSON.stringify({
             request: "room created",
@@ -395,13 +395,13 @@ function onRoomCreated(room) {
     }
 }
 
-function onUserEnteredRoom(user, room) {
+function onUserEnteredRoom(user, room) { // User, Room
     room.sendAll(JSON.stringify({
         request: "member entered"
     }));
 }
 
-function onUserLeftRoom(user, room) {
+function onUserLeftRoom(user, room) {   // User, Room
     if (room.getCurrentPersonnel() == 0) {
         roomManager.removeRoom(room);
         
@@ -418,7 +418,7 @@ function onUserLeftRoom(user, room) {
     }
 }
 
-function onRoomChiefChanged(room) {
+function onRoomChiefChanged(room) { // Room
     logi("Room chief changed.");
     room.sendAll(JSON.stringify({
         request: "chief changed",
@@ -426,7 +426,7 @@ function onRoomChiefChanged(room) {
     }));
 }
 
-function logi(text) {
+function logi(text) {   // string
     var str = "console.log('\\u001b[36m" + text + "'";
     
     for (var i = 1;i < arguments.length;i ++) {
@@ -436,7 +436,7 @@ function logi(text) {
     eval(str);
 }
 
-function logv(text) {
+function logv(text) {   // string
     var str = "console.log('\\u001b[35m" + text + "'";
     
     for (var i = 1;i < arguments.length;i ++) {
@@ -446,7 +446,7 @@ function logv(text) {
     eval(str);
 }
 
-function logw(text) {
+function logw(text) {   // string
     var str = "console.log('\\u001b[33m" + text + "'";
     
     for (var i = 1;i < arguments.length;i ++) {
@@ -456,7 +456,7 @@ function logw(text) {
     eval(str);
 }
 
-function loge(text) {
+function loge(text) {   // string
     var str = "console.log('\\u001b[31m" + text + "'";
     
     for (var i = 1;i < arguments.length;i ++) {
